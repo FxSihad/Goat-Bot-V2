@@ -1,14 +1,13 @@
 const axios = require("axios");
 const qs = require("qs");
 const cheerio = require("cheerio");
-const tinyUrl = require('tinyurl');
-const { getStreamFromURL } = global.utils;
+const { getStreamFromURL, shortenURL, randomString } = global.utils;
 
 module.exports = {
 	config: {
 		name: "tik",
 		aliases: ["tiktok"],
-		version: "1.4",
+		version: "1.7",
 		author: "NTKhang",
 		countDown: 5,
 		role: 0,
@@ -28,42 +27,53 @@ module.exports = {
 
 	langs: {
 		vi: {
-			invalidUrl: "Vui lòng nhập url tiktok hợp lệ",
-			downloadingVideo: "Đang tải video: %1...",
-			downloadedSlide: "Đã tải slide: %1\n%2",
-			downloadedVideo: "Đã tải video: %1\nUrl Download: %2",
-			downloadingAudio: "Đang tải audio: %1...",
-			downloadedAudio: "Đã tải audio: %1"
+			invalidUrl: "⚠️ Vui lòng nhập url tiktok hợp lệ",
+			downloadingVideo: "📥 Đang tải video: %1...",
+			downloadedSlide: "✅ Đã tải slide: %1\n%2",
+			downloadedVideo: "✅ Đã tải video: %1\n🔗 Url Download: %2",
+			downloadingAudio: "📥 Đang tải audio: %1...",
+			downloadedAudio: "✅ Đã tải audio: %1",
+			errorOccurred: "❌ Đã xảy ra lỗi:\n\n%1",
+			tryAgain: "❌ Đã xảy ra lỗi, vui lòng thử lại sau"
 		},
 		en: {
-			invalidUrl: "Please enter a valid tiktok url",
-			downloadingVideo: "Downloading video: %1...",
-			downloadedSlide: "Downloaded slide: %1\n%2",
-			downloadedVideo: "Downloaded video: %1\nDownload Url: %2",
-			downloadingAudio: "Downloading audio: %1...",
-			downloadedAudio: "Downloaded audio: %1"
+			invalidUrl: "⚠️ Please enter a valid tiktok url",
+			downloadingVideo: "📥 Downloading video: %1...",
+			downloadedSlide: "✅ Downloaded slide: %1\n%2",
+			downloadedVideo: "✅ Downloaded video: %1\n🔗 Download Url: %2",
+			downloadingAudio: "📥 Downloading audio: %1...",
+			downloadedAudio: "✅ Downloaded audio: %1",
+			errorOccurred: "❌ An error occurred:\n\n%1",
+			tryAgain: "❌ An error occurred, please try again later"
 		}
 	},
 
 	onStart: async function ({ args, message, getLang }) {
+		const messageErrorInvalidUrl = 'It seems that TikTok is changed something on their website, so we are not able to reach their data. Please wait for 5 minutes and try to request your link again. We are looking into this issue.';
+
 		switch (args[0]) {
 			case "video":
 			case "-v":
 			case "v": {
+				if (!(args[1] || "").trim().match(/^http(s|):\/\/.*(tiktok)\.com.*\/.*$/gi))
+					return message.reply(getLang("invalidUrl"));
 				const data = await query(args[1]);
 				if (data.status == 'error') {
-					if (data.message == 'It seems that TikTok is changed something on their website, so we are not able to reach their data. Please wait for 5 minutes and try to request your link again. We are looking into this issue.')
+					if (data.message == messageErrorInvalidUrl)
 						return message.reply(getLang("invalidUrl"));
 					else
-						return message.reply(data.message);
+						return message.reply(getLang("errorOccurred"), JSON.stringify(data, null, 2));
 				}
 
 				const msgSend = message.reply(getLang("downloadingVideo", data.title));
 				const linksNoWatermark = data.downloadUrls;
+				if (!linksNoWatermark)
+					return message.reply(getLang("tryAgain"));
+
 				if (Array.isArray(linksNoWatermark)) {
-					const allStreamImage = await Promise.all(linksNoWatermark.map(link => getStreamFromURL(link)));
-					const allImageShortUrl = await Promise.all(linksNoWatermark.map((link, index) => tinyUrl
-						.shorten(link)
+					console.log(linksNoWatermark);
+					const allStreamImage = await Promise.all(linksNoWatermark.map(link => getStreamFromURL(link, `${randomString(10)}.jpg`)));
+					const allImageShortUrl = await Promise.all(linksNoWatermark.map((link, index) => shortenURL(link)
 						.then(shortUrl => `${index + 1}: ${shortUrl}`)
 					));
 					message.reply({
@@ -74,7 +84,7 @@ module.exports = {
 				}
 				const streamFile = await getStreamFromURL(linksNoWatermark, 'video.mp4');
 				message.reply({
-					body: getLang("downloadedVideo", data.title, await tinyUrl.shorten(linksNoWatermark)),
+					body: getLang("downloadedVideo", data.title, await shortenURL(linksNoWatermark)),
 					attachment: streamFile
 				}, async () => message.unsend((await msgSend).messageID));
 				break;
@@ -82,15 +92,22 @@ module.exports = {
 			case "audio":
 			case "a":
 			case "-a": {
+				if (!(args[1] || "").trim().match(/^http(s|):\/\/.*(tiktok)\.com.*\/.*$/gi))
+					return message.reply(getLang("invalidUrl"));
 				const dataAudio = await query(args[1], true);
 				if (dataAudio.status == 'error') {
-					if (dataAudio.message == 'It seems that TikTok is changed something on their website, so we are not able to reach their data. Please wait for 5 minutes and try to request your link again. We are looking into this issue.')
-						return message.reply("Vui lòng nhập url tiktok hợp lệ");
+					if (dataAudio.message == messageErrorInvalidUrl)
+						return message.reply(getLang("invalidUrl"));
 					else
 						return message.reply(dataAudio.message);
 				}
-				const urlAudio = dataAudio.downloadUrls, audioName = dataAudio.title;
+
+				const urlAudio = dataAudio.downloadUrls;
+				const audioName = dataAudio.title;
+				if (!urlAudio)
+					return message.reply(getLang("tryAgain"));
 				const msgSendAudio = message.reply(getLang("downloadingAudio", audioName));
+
 				const streamFileAudio = await getStreamFromURL(urlAudio, "audio.mp3");
 				message.reply({
 					body: getLang("downloadedAudio", audioName),
@@ -144,6 +161,6 @@ async function query(url, isMp3 = false) {
 		format.downloadUrls = url;
 		return format;
 	}
-	format.downloadUrls = $(allUrls[isMp3 ? allUrls.length - 1 : 0]).attr('href')
+	format.downloadUrls = $(allUrls[isMp3 ? allUrls.length - 1 : 0]).attr('href');
 	return format;
 }

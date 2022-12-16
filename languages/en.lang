@@ -1,5 +1,7 @@
 # index.js
-index.newVersionDetected=You are using version %1, the latest version is %2. Please update to use the bot better by typing into the console/cmd command: node update
+Goat.newVersionDetected=You are using version %1, the latest version is %2. Please update to use the bot better by typing into the console/cmd command: node update
+Goat.autoRestart1=Bot will auto restart in %1 seconds
+Goat.autoRestart2=Bot will auto restart by cron job: %1
 
 # bot/login/login.js
 login.currentlyLogged=Login in progress
@@ -12,7 +14,7 @@ login.accountError=Please enter the full permission token in the form of %1 or c
 login.tokenError=Token is invalid or expired. Please enter the full permission token in the form of %1 into the file %2
 login.cookieError=Cookie is invalid or expired.
 login.loginPasswordError=Error occurred when logging in with email & password
-login.loginSuccess=Successful logon
+login.loginSuccess=Successful login
 login.loginError=An error occurred while signing in
 login.openDashboardSuccess=Successfully opened bot management page
 login.openDashboardError=An error occurred when opening the bot management page
@@ -26,9 +28,7 @@ login.notLoggedIn=An error occurred, please check your account again
 login.callBackError=An error occurred when callback listenMqtt
 login.userBanned=You've been banned from using a bot!!
 login.checkGbanError=An error occurred while checking GBAN
-login.gbanMessage=Bạn đã bị ban khỏi project GOAT-BOT vào ngày %1 với lý do: %2
 login.gbanMessage=You have been banned from the Goat-Bot project on %1 for the reason: %2
-login.gbanAdminMessage=Người dùng %1 đã bị ban khỏi project GOAT-BOT vào ngày %2 với lý do: %3
 login.gbanAdminMessage=User %1 has been banned from the Goat-Bot project on %2 for the reason: %3
 login.openServerUptimeSuccess=🚀 Opened uptime server: %1
 login.openServerUptimeError=An error has occurred, cannot open server uptime
@@ -71,7 +71,9 @@ handlerEvents.errorOccurred2=❌ [ %1 ]\nAn error occurred at command onChat in 
 handlerEvents.errorOccurred3=❌ [ %1 ]\nAn error occurred when executing onReply at command "%2"\n\n%3
 handlerEvents.errorOccurred4=❌ [ %1 ]\nAn error occurred when executing onReaction at command "%2"\n\n%3
 handlerEvents.errorOccurred5=❌ [ %1 ]\nAn error occurred when executing onEvent at command "%2"\n\n%3
-handlerEvents.errorOccurred6=❌ [ %1 ]\nAn error occurred when executing onCall at command "%2"\n\n%3
+handlerEvents.errorOccurred6=❌ [ %1 ]\nAn error occurred when executing onEvent at command "%2"\n\n%3
+handlerEvents.cannotFindCommandName=❌ Cannot find command name to execute this reply!
+handlerEvents.cannotFindCommand=❌ Cannot find command "%1" to execute this reply!
 
 # bot/autoUptime.js
 autoUptime.autoUptime=AutoUptime mode turned on
@@ -88,6 +90,7 @@ indexController.connectMySQLError=An error occurred while connecting to a SQLITE
 updater.latestVersion=You are using the latest version
 updater.newVersions=There are %1 new versions to update, starting to update...
 updater.updateSuccess=Update successfully ✓
+updater.configChanged=The config.json file has been changed, please check your config.json file again
 
 # dashboard/routes/verifyfbid.js
 verifyfbid.sendCode=Your verification code is:\n%1\nThe verification code is valid for %2 minutes

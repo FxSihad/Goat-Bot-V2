@@ -54,33 +54,48 @@ function getText(head, key, ...args) {
 		for (const filePath in files) {
 			const description = files[filePath];
 			const fullPath = `${process.cwd()}/${filePath}`;
-			const { data: getFile } = await axios.get(`https://github.com/ntkhang03/Goat-Bot-V2/raw/main/${filePath}`, {
-				responseType: 'arraybuffer'
-			});
+			let getFile;
+			try {
+				getFile = (await axios.get(`https://github.com/ntkhang03/Goat-Bot-V2/raw/main/${filePath}`, {
+					responseType: 'arraybuffer'
+				})).data;
+			}
+			catch (e) {
+				continue;
+			}
 
 			if (filePath === "config.json") {
 				const currentConfig = require('./config.json');
-				for (const key in files[filePath])
-					_.set(currentConfig, key, files[filePath][key]);
+				for (const key in files[filePath]) {
+					const value = files[filePath][key];
+					if (typeof value == "string" && value.startsWith("DEFAULT_")) {
+						const keyOfDefault = value.replace("DEFAULT_", "");
+						_.set(currentConfig, key, _.get(currentConfig, keyOfDefault));
+					}
+					else
+						_.set(currentConfig, key, files[filePath][key]);
+				}
 
 				if (fs.existsSync(`${process.cwd()}/config.backup.json`)) {
 					let backupConfig = 1;
-					while (fs.existsSync(`${fullPath}_${backupConfig}.backup.json`))
+					while (fs.existsSync(`${fullPath.slice(0, -5)}_${backupConfig}.backup.json`))
 						backupConfig++;
-					fs.copyFileSync(fullPath, `${fullPath}_${backupConfig}.backup.json`);
+					fs.copyFileSync(fullPath, `${fullPath.slice(0, -5)}_${backupConfig}.backup.json`);
 				}
 				else {
 					fs.copyFileSync(fullPath, `${process.cwd()}/config.backup.json`);
 				}
 				fs.writeFileSync(fullPath, JSON.stringify(currentConfig, null, 2));
 				console.log(chalk.bold.blue('[↑]'), `${filePath}`);
+				// warning config.json is changed
+				console.log(chalk.bold.yellow('[!]'), getText("updater", "configChanged"));
 			}
 			else if (fs.existsSync(fullPath)) {
 				fs.writeFileSync(fullPath, Buffer.from(getFile));
 				console.log(chalk.bold.blue('[↑]'), `${filePath}:`, chalk.hex('#858585')(description));
 			}
 			else {
-				const cutFullPath = filePath.split('/');
+				const cutFullPath = filePath.split('/').filter(p => p);
 				cutFullPath.pop();
 				for (let i = 0; i < cutFullPath.length; i++) {
 					const path = `${process.cwd()}/${cutFullPath.slice(0, i + 1).join('/')}`;

@@ -1,6 +1,7 @@
 const { existsSync, writeJsonSync, readJSONSync } = require("fs-extra");
 const moment = require("moment-timezone");
 const path = require("path");
+
 const _ = require("lodash");
 const optionsWriteJSON = {
 	spaces: 2,
@@ -14,10 +15,11 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 
 	switch (databaseType) {
 		case "mongodb":
-			GlobalData = await globalModel.find().lean();
+			// delete keys '_id' and '__v' in all global data
+			GlobalData = (await globalModel.find({}).lean()).map(item => _.omit(item, ["_id", "__v"]));
 			break;
 		case "sqlite":
-			GlobalData = (await globalModel.findAll()).map(u => u.get({ plain: true }));
+			GlobalData = (await globalModel.findAll()).map(item => item.get({ plain: true }));
 			break;
 		case "json":
 			if (!existsSync(pathGlobalData))
@@ -28,7 +30,7 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 	global.client.dashBoardData = GlobalData;
 
 	async function save(key, data, mode, path) {
-		const index = _.findIndex(GlobalData, { key });
+		const index = _.findIndex(global.client.dashBoardData, { key });
 		if (index === -1 && mode === "update") {
 			const err = new Error(`Can't find data with key: "${key}" in database`);
 			err.name = "KEY_NOT_FOUND";
@@ -40,64 +42,80 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 				switch (databaseType) {
 					case "mongodb":
 					case "sqlite": {
-						const dataCreated = await globalModel.create(data);
-						GlobalData.push(dataCreated);
-						return databaseType == "mongodb" ? dataCreated : dataCreated.get({ plain: true });
+						let dataCreated = await globalModel.create(data);
+						dataCreated = databaseType == "mongodb" ?
+							_.omit(dataCreated._doc, ["_id", "__v"]) :
+							dataCreated.get({ plain: true });
+						global.client.dashBoardData.push(dataCreated);
+						return databaseType;
 					}
 					case "json": {
 						const timeCreate = moment.tz().format();
 						data.createdAt = timeCreate;
 						data.updatedAt = timeCreate;
-						GlobalData.push(data);
-						writeJsonSync(pathGlobalData, GlobalData, optionsWriteJSON);
+						global.client.dashBoardData.push(data);
+						writeJsonSync(pathGlobalData, global.client.dashBoardData, optionsWriteJSON);
 						return data;
 					}
 				}
 				break;
 			}
 			case "update": {
-				let dataWillChange = GlobalData[index];
+				const oldGlobalData = global.client.dashBoardData[index];
+				const dataWillChange = {};
 
-				if (Array.isArray(path) && Array.isArray(data))
-					dataWillChange = path.forEach((p, i) => _.set(dataWillChange, p, data[i]));
+				if (Array.isArray(path) && Array.isArray(data)) {
+					path.forEach((p, index) => {
+						const _key = p.split(".")[0];
+						dataWillChange[_key] = oldGlobalData[_key];
+						_.set(oldGlobalData, p, data[index]);
+					});
+				}
 				else
-					if (path)
-						dataWillChange = _.set(dataWillChange, path, data);
+					if (path && typeof path === "string" || Array.isArray(path)) {
+						const _key = Array.isArray(path) ? path[0] : path.split(".")[0];
+						dataWillChange[_key] = oldGlobalData[_key];
+						_.set(dataWillChange, path, data);
+					}
 					else
 						for (const key in data)
 							dataWillChange[key] = data[key];
 
 				switch (databaseType) {
 					case "mongodb": {
-						const dataUpdated = await globalModel.findOneAndUpdate({ key }, dataWillChange, { returnDocument: 'after' });
-						GlobalData[index] = dataUpdated;
+						let dataUpdated = await globalModel.findOneAndUpdate({ key }, dataWillChange, { returnDocument: 'after' });
+						dataUpdated = _.omit(dataUpdated._doc, ["_id", "__v"]);
+						global.client.dashBoardData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "sqlite": {
 						const dataUpdated = (await (await globalModel.findOne({ where: { key } }))
 							.update(dataWillChange))
 							.get({ plain: true });
-						GlobalData[index] = dataUpdated;
+						global.client.dashBoardData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "json": {
 						dataWillChange.updatedAt = moment.tz().format();
-						GlobalData[index] = dataWillChange;
-						writeJsonSync(pathGlobalData, GlobalData, optionsWriteJSON);
-						return dataWillChange;
+						global.client.dashBoardData[index] = {
+							...oldGlobalData,
+							...dataWillChange
+						};
+						writeJsonSync(pathGlobalData, global.client.dashBoardData, optionsWriteJSON);
+						return global.client.dashBoardData[index];
 					}
 				}
 				break;
 			}
 			case "remove": {
 				if (index != -1) {
-					GlobalData.splice(index, 1);
+					global.client.dashBoardData.splice(index, 1);
 					if (databaseType == "mongodb")
 						await globalModel.deleteOne({ key });
 					else if (databaseType == "sqlite")
 						await globalModel.destroy({ where: { key } });
 					else
-						writeJsonSync(pathGlobalData, GlobalData, optionsWriteJSON);
+						writeJsonSync(pathGlobalData, global.client.dashBoardData, optionsWriteJSON);
 				}
 				break;
 			}
@@ -140,7 +158,7 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 
 		const queue = new Promise(async function (resolve, reject) {
 			try {
-				if (GlobalData.some(u => u.key == key)) {
+				if (global.client.dashBoardData.some(u => u.key == key)) {
 					const messageError = new Error(`Data with key "${key}" already exists in the data`);
 					messageError.name = "KEY_EXISTS";
 					throw messageError;
@@ -167,7 +185,7 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 
 	function getAll(path, defaultValue, query) {
 		try {
-			let dataReturn = _.cloneDeep(GlobalData);
+			let dataReturn = _.cloneDeep(global.client.dashBoardData);
 
 			if (query)
 				if (typeof query !== "string")
@@ -196,7 +214,7 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 		try {
 			if (!key || typeof key != "string")
 				throw new Error(`The first argument (key) must be a string, not a ${typeof key}`);
-			let dataReturn = GlobalData.find(u => u.key == key);
+			let dataReturn = global.client.dashBoardData.find(u => u.key == key);
 			if (!dataReturn)
 				return undefined;
 
@@ -225,7 +243,7 @@ module.exports = async function (databaseType, globalModel, fakeGraphql) {
 		try {
 			if (!path && (typeof updateData != "object" || typeof updateData == "object" && Array.isArray(updateData)))
 				throw new Error(`The second argument (updateData) must be an object, not a ${typeof updateData}`);
-			if (!GlobalData.some(u => u.key == key)) {
+			if (!global.client.dashBoardData.some(u => u.key == key)) {
 				const messageError = new Error(`Data with key "${key}" does not exist in the data`);
 				messageError.name = "KEY_NOT_FOUND";
 				throw messageError;

@@ -212,7 +212,7 @@ const utils = {
 				err = utils.removeHomeDir(JSON.stringify(err, null, 2));
 			else
 				err = utils.removeHomeDir(`${err.name || err.error}: ${err.message}`);
-			return await api.sendMessage(utils.getLang("utils", "errorOccurred", err, event.threadID, event.messageID));
+			return await api.sendMessage(utils.getText("utils", "errorOccurred", err), event.threadID, event.messageID);
 		}
 		return {
 			send: async (form, callback) => {
@@ -320,6 +320,22 @@ const utils = {
 			const err = new Error(response.data.error);
 			for (const key in response.data)
 				err[key] = response.data[key];
+			if (err.error == "Vui lòng thao tác chậm lại") {
+				err.name = "SlowDown";
+				err.error = "Please wait a few seconds";
+			}
+			else if (err.error == "Vui lòng nhập đúng link facebook") {
+				err.name = "InvalidLink";
+				err.error = "Please enter the correct facebook link";
+			}
+			else if (err.error == "Không thể lấy được dữ liệu vui lòng báo admin!!!") {
+				err.name = "CannotGetData";
+				err.error = "Unable to get data, please report to admin!!!";
+			}
+			else if (err.error == "Link không tồn tại hoặc chưa để chế độ công khai!") {
+				err.name = "LinkNotExist";
+				err.error = "Link does not exist or is not set to public!";
+			}
 			throw err;
 		}
 		return uid;
@@ -451,6 +467,31 @@ const utils = {
 				output += wordNoTranslate[i];
 		}
 		return output;
+	},
+	async shortenURL(url) {
+		try {
+			// const result = await axios({
+			// 	url: "https://cutt.ly/scripts/shortenUrl.php",
+			// 	method: "POST",
+			// 	data: qs.stringify({
+			// 		url: url,
+			// 		domain: 0
+			// 	})
+			// });
+			// return result.data;
+
+			const { data } = await axios.post("https://shorten-url.onrender.com/shorten", { url });
+			if (data.result)
+				return data.result;
+			else {
+				let error = new Error('Error when shortening URL');
+				error = { ...error, ...data.error };
+				throw error;
+			}
+		}
+		catch (err) {
+			throw new Error('Error when shortening URL');
+		}
 	},
 	drive: {
 		default: drive,

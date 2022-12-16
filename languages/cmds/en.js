@@ -196,18 +196,18 @@ module.exports = {
 		text: {
 			missingFileName: "⚠️ | Please enter the command name you want to reload",
 			loaded: "✅ | Loaded command %1 successfully",
-			loadedError: "❌ | Failed to load command $%1 with error\n%2: %3",
+			loadedError: "❌ | Failed to load command %1 with error\n%2: %3",
 			loadedSuccess: "✅ | Loaded successfully %1 command",
 			loadedFail: "❌ | Failed to load %1 command\n%2",
 			missingCommandNameUnload: "⚠️ | Please enter the command name you want to unload",
 			unloaded: "✅ | Unloaded command %1 successfully",
-			unloadedError: "❌ | Failed to unload command $%1 with error\n%2: %3",
+			unloadedError: "❌ | Failed to unload command %1 with error\n%2: %3",
 			missingUrl: "⚠️ | Please enter the url of the command file you want to install",
 			missingFileNameInstall: "⚠️ | Please enter the file name to save the command (with .js extension)",
 			invalidUrl: "⚠️ | Unable to get command code",
 			alreadExist: "⚠️ | The command file already exists, are you sure you want to overwrite the old command file?\nReact to this message to continue",
 			installed: "✅ | Installed command %1 successfully, the command file is saved at %2",
-			installedError: "❌ | Failed to install command $%1 with error\n%2: %3",
+			installedError: "❌ | Failed to install command %1 with error\n%2: %3",
 			missingFile: "⚠️ | Command file %1 not found",
 			invalidFileName: "⚠️ | Invalid command file name",
 			unloadedFile: "✅ | Unloaded command %1"
@@ -230,11 +230,39 @@ module.exports = {
 	customrankcard: {
 		shortDescription: "Design rank card",
 		longDescription: "Design rank card by your own",
+		guide: {
+			body: "   {pn} [maincolor | subcolor | linecolor | progresscolor | alphasubcolor | textcolor | namecolor | expcolor | rankcolor | levelcolor | reset] <value>"
+				+ "\n   In which: "
+				+ "\n  + maincolor | background <value>: main background of rank card"
+				+ "\n  + subcolor <value>: sub background"
+				+ "\n  + linecolor <value>: color of line between main and sub background"
+				+ "\n  + expbarcolor <value>: color of exp bar"
+				+ "\n  + progresscolor <value>: color of current exp bar"
+				+ "\n  + alphasubcolor <value>: opacity of sub background (from 0 -> 1)"
+				+ "\n  + textcolor <value>: color of text (hex color or rgba)"
+				+ "\n  + namecolor <value>: color of name"
+				+ "\n  + expcolor <value>: color of exp"
+				+ "\n  + rankcolor <value>: color of rank"
+				+ "\n  + levelcolor <value>: color of level"
+				+ "\n    • <value> can be hex color, rgb, rgba, gradient (each color is separated by space) or image url"
+				+ "\n    • If you want to use gradient, please enter many colors separated by space"
+				+ "\n   {pn} reset: reset all to default"
+				+ "\n   Example:"
+				+ "\n    {pn} maincolor #fff000"
+				+ "\n    {pn} subcolor rgba(255,136,86,0.4)"
+				+ "\n    {pn} reset",
+			attachment: {
+				[`${process.cwd()}/scripts/cmds/assets/guide/customrankcard_1.jpg`]: "https://i.ibb.co/BZ2Qgs1/image.png",
+				[`${process.cwd()}/scripts/cmds/assets/guide/customrankcard_2.png`]: "https://i.ibb.co/wy1ZHHL/image.png"
+			}
+		},
 		text: {
-			invalidImage: "Invalid image url, please choose a url with image as destination",
+			invalidImage: "Invalid image url, please choose an url with image destination (jpg, jpeg, png, gif), you can upload image to https://imgbb.com/ and choose \"get direct link\" to get image url",
 			invalidAttachment: "Invalid attachment, please choose an image file",
 			invalidColor: "Invalid color code, please choose a hex color code (6 digits) or rgba color code",
-			success: "Your changes have been saved",
+			notSupportImage: "Url image is not supported with option \"%1\"",
+			success: "Your changes have been saved, here is a preview",
+			reseted: "All settings have been reset to default",
 			invalidAlpha: "Please choose a number from 0 -> 1"
 		}
 	},
@@ -339,7 +367,7 @@ module.exports = {
 			help: "%1\n%2\n%1\nPage [ %3/%4 ]\nCurrently, the bot has %5 commands that can be used\n» Type %6help to view the command list\n» Type %6help to view the details of how to use that command\n%1\n%7",
 			help2: "%1%2\n» Currently, the bot has %3 commands that can be used, type %4help <command name> to view the details of how to use that command\n%2\n%5",
 			commandNotFound: "Command \"%1\" does not exist",
-			getInfoCommand: "%1\n» Description: %2\n» Other names: %3\n» Other names in your group: %4\n» Version: %5\n» Role: %6\n» Time per command: %7s\n» Author: %8\n» Usage guide:\n%9",
+			getInfoCommand: "%1\n» Description: %2\n» Other names: %3\n» Other names in your group: %4\n» Version: %5\n» Role: %6\n» Time per command: %7s\n» Author: %8\n━━━  ❖  ━━━\n» Usage guide:\n%9\n━━━  ❖  ━━━\n» Notes:\n• The content inside <XXXXX> can be changed\n• The content inside [a|b|c] is a or b or c",
 			doNotHave: "Do not have",
 			roleText0: "0 (All users)",
 			roleText1: "1 (Group administrators)",
@@ -481,7 +509,7 @@ module.exports = {
 		guide: {
 			body: "   {pn} on: Turn on leave message\n   {pn} off: Turn off leave message\n   {pn} text [<content> | reset]: edit text content or reset to default, available shortcuts:\n  + {userName}: name of member who leave group\n  + {userNameTag}: name of member who leave group (tag)\n  + {boxName}: name of group chat\n  + {type}: leave/kicked by admin\n  + {session}: session in day\n\n   Example:\n    {pn} text {userName} has {type} group, see you again 🤧\n\n   Reply or send a message with file with content {pn} file: to add attachment file to leave message (image, video, audio)\n\nExample:\n   {pn} file reset: reset file",
 			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setleave/guide1.png`]: "https://github.com/ntkhang03/Goat-Bot-V2/raw/main/scripts/cmds/assets/guide/setleave/guide1.png"
+				[`${process.cwd()}/scripts/cmds/assets/guide/setleave_1.png`]: "https://i.ibb.co/2FKJHJr/guide1.png"
 			}
 		},
 		text: {
@@ -500,8 +528,8 @@ module.exports = {
 		guide: {
 			body: "   {pn} <nick name>: change nickname of yourself\n   {pn} @tags <nick name>: change nickname of members tagged\n   {pn} all <nick name>: change nickname of all members in chat\n\nWith available shortcuts:\n   + {userName}: name of member\n   + {userID}: ID of member\n\n   Example: (see image)",
 			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setname/guide1.png`]: "https://github.com/ntkhang03/Goat-Bot-V2/raw/main/scripts/cmds/assets/guide/setname/guide1.png",
-				[`${process.cwd()}/scripts/cmds/assets/guide/setname/guide2.png`]: "https://github.com/ntkhang03/Goat-Bot-V2/raw/main/scripts/cmds/assets/guide/setname/guide2.png"
+				[`${process.cwd()}/scripts/cmds/assets/guide/setname_1.png`]: "https://i.ibb.co/gFh23zb/guide1.png",
+				[`${process.cwd()}/scripts/cmds/assets/guide/setname_2.png`]: "https://i.ibb.co/BNWHKgj/guide2.png"
 			}
 		},
 		text: {
@@ -528,7 +556,7 @@ module.exports = {
 		guide: {
 			body: "   {pn} text [<content> | reset]: edit text content or reset to default, with some shortcuts:\n  + {userName}: new member name\n  + {userNameTag}: new member name (tag)\n  + {boxName}:  group chat name\n  + {multiple}: you || you guys\n  + {session}:  session in day\n\n   Example:\n    {pn} text Hello {userName}, welcome to {boxName}, have a nice day {multiple}\n\n   Reply (phản hồi) or send a message with file with content {pn} file: to add file attachments to welcome message (image, video, audio)\n\n   Example:\n    {pn} file reset: delete file attachments",
 			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setwelcome/guide1.png`]: "https://github.com/ntkhang03/Goat-Bot-V2/raw/main/scripts/cmds/assets/guide/setwelcome/guide1.png"
+				[`${process.cwd()}/scripts/cmds/assets/guide/setwelcome_1.png`]: "https://i.ibb.co/tp16L1d/guide1.png"
 			}
 		},
 		text: {
@@ -585,7 +613,7 @@ module.exports = {
 	thread: {
 		shortDescription: "Manage group chat",
 		longDescription: "Manage group chat in bot system",
-		guide: "   {pn} [find | -f | search | -s] <name to find>: search group chat in bot data by name\n   {pn} [ban | -b] [<tid> | leave blank] <reason>: use to ban group with id <tid> or current group using bot\n   Example:\n    {pn} ban 3950898668362484 spam bot\n    {pn} ban spam too much\n    {pn} unban [<tid> | leave blank] to unban group with id <tid> or current group",
+		guide: "   {pn} [find | -f | search | -s] <name to find>: search group chat in bot data by name\n   {pn} [find | -f | search | -s] [-j | joined] <name to find>: search group chat in bot data that bot still joined by name\n   {pn} [ban | -b] [<tid> | leave blank] <reason>: use to ban group with id <tid> or current group using bot\n   Example:\n    {pn} ban 3950898668362484 spam bot\n    {pn} ban spam too much\n    {pn} unban [<tid> | leave blank] to unban group with id <tid> or current group",
 		text: {
 			noPermission: "You don't have permission to use this feature",
 			found: "🔎 Found %1 group matching the keyword \"%3\" in bot data:\n%3",
@@ -716,7 +744,8 @@ module.exports = {
 			noVideo: "Sorry, no video was found with a size less than 83MB",
 			downloadingAudio: "Downloading audio %1",
 			noAudio: "Sorry, no audio was found with a size less than 26MB",
-			info: "💠 Title: %1\n🏪 Channel: %2\n👨‍👩‍👧‍👦 Subscriber: %3\n⏱ Video duration: %4\n👀 View count: %5\n👍 Like count: %6\n👎 Dislike count: %7\n🆙 Upload date: %8\n#️⃣ ID: %9"
+			info: "💠 Title: %1\n🏪 Channel: %2\n👨‍👩‍👧‍👦 Subscriber: %3\n⏱ Video time: %4\n👀 View: %5\n👍 Like: %6\n🆙 Upload date: %7\n🔠 ID: %8\n🔗 Link: %9",
+			listChapter: "\n📖 List chapter: %1\n"
 		}
 	}
 };

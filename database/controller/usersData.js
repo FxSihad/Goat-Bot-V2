@@ -15,11 +15,12 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 
 	switch (databaseType) {
 		case "mongodb": {
-			Users = await userModel.find().lean();
+			// delete keys '_id' and '__v' in all users
+			Users = (await userModel.find({}).lean()).map(user => _.omit(user, ["_id", "__v"]));
 			break;
 		}
 		case "sqlite": {
-			Users = (await userModel.findAll()).map(u => u.get({ plain: true }));
+			Users = (await userModel.findAll()).map(user => user.get({ plain: true }));
 			break;
 		}
 		case "json": {
@@ -32,11 +33,11 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 	global.db.allUserData = Users;
 
 	async function save(userID, userData, mode, path) {
-		let index = _.findIndex(Users, { userID });
+		let index = _.findIndex(global.db.allUserData, { userID });
 		if (index === -1 && mode === "update") {
 			try {
 				await create(userID);
-				index = _.findIndex(Users, { userID });
+				index = _.findIndex(global.db.allUserData, { userID });
 			}
 			catch (err) {
 				const e = new Error(`Can't find user with userID: ${userID} in database`);
@@ -50,16 +51,19 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 				switch (databaseType) {
 					case "mongodb":
 					case "sqlite": {
-						const dataCreated = await userModel.create(userData);
-						Users.push(dataCreated);
-						return databaseType == "mongodb" ? dataCreated : dataCreated.get({ plain: true });
+						let dataCreated = await userModel.create(userData);
+						dataCreated = databaseType === "mongodb" ?
+							_.omit(dataCreated._doc, ["_id", "__v"]) :
+							dataCreated.get({ plain: true });
+						global.db.allUserData.push(dataCreated);
+						return dataCreated;
 					}
 					case "json": {
 						const timeCreate = moment.tz().format();
 						userData.createdAt = timeCreate;
 						userData.updatedAt = timeCreate;
-						Users.push(userData);
-						writeJsonSync(pathUsersData, Users, optionsWriteJSON);
+						global.db.allUserData.push(userData);
+						writeJsonSync(pathUsersData, global.db.allUserData, optionsWriteJSON);
 						return userData;
 					}
 					default: {
@@ -69,42 +73,55 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 				break;
 			}
 			case "update": {
-				let dataWillChange = Users[index];
+				const oldUserData = global.db.allUserData[index];
+				const dataWillChange = {};
 
-				if (Array.isArray(path) && Array.isArray(userData))
-					dataWillChange = path.forEach((p, i) => _.set(dataWillChange, p, userData[i]));
+				if (Array.isArray(path) && Array.isArray(userData)) {
+					path.forEach((p, index) => {
+						const key = p.split(".")[0];
+						dataWillChange[key] = oldUserData[key];
+						_.set(dataWillChange, p, userData[index]);
+					});
+				}
 				else
-					if (path)
-						dataWillChange = _.set(dataWillChange, path, userData);
+					if (path && typeof path === "string" || Array.isArray(path)) {
+						const key = Array.isArray(path) ? path[0] : path.split(".")[0];
+						dataWillChange[key] = oldUserData[key];
+						_.set(dataWillChange, path, userData);
+					}
 					else
 						for (const key in userData)
 							dataWillChange[key] = userData[key];
 
 				switch (databaseType) {
 					case "mongodb": {
-						const dataUpdated = await userModel.findOneAndUpdate({ userID }, dataWillChange, { returnDocument: 'after' });
-						Users[index] = dataUpdated;
+						let dataUpdated = await userModel.findOneAndUpdate({ userID }, dataWillChange, { returnDocument: 'after' });
+						dataUpdated = _.omit(dataUpdated._doc, ["_id", "__v"]);
+						global.db.allUserData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "sqlite": {
 						const dataUpdated = (await (await userModel.findOne({ where: { userID } }))
 							.update(dataWillChange))
 							.get({ plain: true });
-						Users[index] = dataUpdated;
+						global.db.allUserData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "json": {
 						dataWillChange.updatedAt = moment.tz().format();
-						Users[index] = dataWillChange;
-						writeJsonSync(pathUsersData, Users, optionsWriteJSON);
-						return dataWillChange;
+						global.db.allUserData[index] = {
+							...oldUserData,
+							...dataWillChange
+						};
+						writeJsonSync(pathUsersData, global.db.allUserData, optionsWriteJSON);
+						return global.db.allUserData[index];
 					}
 				}
 				break;
 			}
 			case "remove": {
 				if (index != -1) {
-					Users.splice(index, 1);
+					global.db.allUserData.splice(index, 1);
 					switch (databaseType) {
 						case "mongodb":
 							await userModel.deleteOne({ userID });
@@ -113,7 +130,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 							await userModel.destroy({ where: { userID } });
 							break;
 						case "json":
-							writeJsonSync(pathUsersData, Users, optionsWriteJSON);
+							writeJsonSync(pathUsersData, global.db.allUserData, optionsWriteJSON);
 							break;
 					}
 				}
@@ -132,7 +149,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 			throw error;
 		}
 		if (checkData) {
-			const userData = Users.find(u => u.userID == userID);
+			const userData = global.db.allUserData.find(u => u.userID == userID);
 			if (userData)
 				return userData.name;
 		}
@@ -172,7 +189,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 
 		const queue = new Promise(async function (resolve, reject) {
 			try {
-				if (Users.some(u => u.userID == userID)) {
+				if (global.db.allUserData.some(u => u.userID == userID)) {
 					const messageError = new Error(`User with id "${userID}" already exists in the data`);
 					messageError.name = "Data already exists";
 					throw messageError;
@@ -240,7 +257,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 
 	function getAll(path, defaultValue, query) {
 		try {
-			let dataReturn = _.cloneDeep(Users);
+			let dataReturn = _.cloneDeep(global.db.allUserData);
 
 			if (query)
 				if (typeof query !== "string")
@@ -273,11 +290,11 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 			}
 			let userData;
 
-			const index = Users.findIndex(u => u.userID == userID);
+			const index = global.db.allUserData.findIndex(u => u.userID == userID);
 			if (index === -1)
 				userData = await create(userID);
 			else
-				userData = Users[index];
+				userData = global.db.allUserData[index];
 
 			if (query)
 				if (typeof query !== "string")
@@ -335,7 +352,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 				error.name = "Invalid money";
 				throw error;
 			}
-			if (!Users.some(u => u.userID == userID))
+			if (!global.db.allUserData.some(u => u.userID == userID))
 				await create(userID);
 			const currentMoney = await get(userID, "money");
 			const newMoney = currentMoney + money;
@@ -364,7 +381,7 @@ module.exports = async function (databaseType, userModel, api, fakeGraphql) {
 				error.name = "Invalid money";
 				throw error;
 			}
-			if (!Users.some(u => u.userID == userID))
+			if (!global.db.allUserData.some(u => u.userID == userID))
 				await create(userID);
 			const currentMoney = await get(userID, "money");
 			const newMoney = currentMoney - money;

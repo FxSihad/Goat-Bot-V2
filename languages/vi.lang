@@ -1,5 +1,7 @@
 # index.js
-index.newVersionDetected=Bạn đang dùng phiên bản %1, phiên bản mới nhất là %2. Vui lòng cập nhật để sử dụng bot tốt hơn bằng cách gõ vào console/cmd lệnh: node update
+Goat.newVersionDetected=Bạn đang dùng phiên bản %1, phiên bản mới nhất là %2. Vui lòng cập nhật để sử dụng bot tốt hơn bằng cách gõ vào console/cmd lệnh: node update
+Goat.autoRestart1=Bot sẽ tự động khởi động lại sau %1 giây
+Goat.autoRestart2=Bot sẽ tự động khởi động lại theo cron job: %1
 
 # bot/login/login.js
 login.currentlyLogged=Đang tiến hành đăng nhập
@@ -70,6 +72,8 @@ handlerEvents.errorOccurred3=❌ [ %1 ]\nĐã xảy ra lỗi khi thực thi onRe
 handlerEvents.errorOccurred4=❌ [ %1 ]\n Đã xảy ra lỗi khi thực thi onReaction tại command "%2"\n\n%3
 handlerEvents.errorOccurred5=❌ [ %1 ]\nĐã xảy ra lỗi tại command event "%2"\n\n%3
 handlerEvents.errorOccurred6=❌ [ %1 ]\nĐã xảy ra lỗi tại command onEvent ở lệnh "%2"\n\n%3
+handlerEvents.cannotFindCommandName=❌ Không tìm thấy tên lệnh để thực thi phản hồi này!
+handlerEvents.cannotFindCommand=❌ Không tìm thấy lệnh "%1" để thực thi phản hồi này!
 
 # bot/autoUptime.js
 autoUptime.autoUptime=Đã bật chế độ autoUptime
@@ -86,6 +90,7 @@ indexController.connectMySQLError=Đã xảy ra lỗi khi kết nối cơ sở d
 updater.latestVersion=Bạn đang sử dụng phiên bản mới nhất
 updater.newVersions=Có %1 phiên bản cần cập nhật mới, bất đầu tiến hành cập nhật...
 updater.updateSuccess=Cập nhật thành công ✓
+updater.configChanged=Tệp config.json đã được thay đổi, vui lòng kiểm tra lại tệp config.json của bạn
 
 # dashboard/routes/verifyfbid.js
 verifyfbid.sendCode=Mã xác nhận của bạn là:\n%1\nMã xác nhận có hiệu lực trong vòng %2 phút

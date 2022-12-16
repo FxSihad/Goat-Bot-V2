@@ -384,7 +384,7 @@
 	{
 		"version": "1.1.3",
 		"files": {
-			"bot/handler/handlerEvents.js": "fix can't use bot when inbox 1-1",
+			"bot/handler/handlerEvents.js": "fixes can't use bot when inbox 1-1",
 			"scripts/events/logsbot.js": "fixes error `TypeError: checkAndTranslate is not a function`",
 			"scripts/cmds/customrankcard.js": "language update",
 			"scripts/cmds/help.js": "language update",
@@ -425,7 +425,7 @@
 			"dashboard/routes/verifyfbid.js": "fixes error `TypeError: checkAndTranslate is not a function`",
 			"languages/vi.lang": "language update",
 			"languages/en.lang": "language update",
-			"scripts/events/leave.js":"language update"
+			"scripts/events/leave.js": "language update"
 		}
 	},
 	{
@@ -461,13 +461,13 @@
 	},
 	{
 		"version": "1.1.9",
-		"files":{
+		"files": {
 			"scripts/cmds/shortcut.js": "fixes with attachment giving error"
 		}
 	},
 	{
 		"version": "1.1.10",
-		"files":{
+		"files": {
 			"scripts/cmds/rankup.js": "fixes `TypeError: Cannot read property of undefined (reading 'attachments')`",
 			"scripts/cmds/shortcut.js": "fixes cannot delete/remove shortcut",
 			"scripts/cmds/avatar.js": "language udpate"
@@ -478,7 +478,7 @@
 		"files": {
 			"scripts/cmds/setalias.js": "fixes bugs",
 			"bot/handler/handlerEvents.js": "language update"
-		}		
+		}
 	},
 	{
 		"version": "1.1.12",
@@ -487,6 +487,325 @@
 		},
 		"deleteFiles": {
 			"scripts/cmds/simsimi.js": "delete command"
+		}
+	},
+	{
+		"version": "1.1.13",
+		"files": {
+			"bot/handler/handlerEvents.js": "language update",
+			"scripts/cmds/avatar.js": "language update",
+			"scripts/cmds/help.js": "language update",
+			"scripts/cmds/hubble.js": "new command: get image from hubble telescope",
+			"scripts/cmds/translate.js": "new command: translate text"
+		}
+	},
+	{
+		"version": "1.1.14",
+		"files": {
+			"scripts/cmds/translate.js": "can translate any message by reaction \"🌐\" or custom by you to message",
+			"scripts/cmds/rules.js": "fixes bugs"
+		}
+	},
+	{
+		"version": "1.1.15",
+		"files": {
+			"scripts/cmds/rank.js": "remove rank card creation with api"
+		}
+	},
+	{
+		"version": "1.1.16",
+		"files": {
+			"scripts/cmds/hubble.js": "update hubble data url",
+			"scripts/cmds/assets/font/BeVietnamPro-Bold.ttf": "add font"
+		}
+	},
+	{
+		"version": "1.1.17",
+		"files": {
+			"database/models/sqlite/userDashBoard.js": "edit filename",
+			"database/controller/index.js": "fixes bugs",
+			"database/connectDB/connectSqlite.js": "",
+			"bot/login/loadData.js": "you can toggle the feature of refreshing user information, thread",
+			"config.json": {
+				"database.type": "sqlite",
+				"database.autoSyncWhenStart": true,
+				"database.notes": "type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable."
+			},
+			"logger/loading.js": "",
+			"logger/log.js": ""
+		}
+	},
+	{
+		"version": "1.1.18",
+		"files": {
+			"scripts/cmds/ignoreonlyad.js": "add new command",
+			"scripts/cmds/ignoreonlyadbox.js": "add new command",
+			"scripts/cmds/jsontomongodb.js": "add new command",
+			"scripts/cmds/jsontosqlite.js": "add new command",
+			"bot/handler/handlerEvents.js": "language update",
+			"languages/en.lang": "language update",
+			"languages/vi.lang": "language update",
+			"scripts/cmds/setlang.js": "language update",
+			"config.json": {
+				"adminOnly.enable": "DEFAULT_adminOnly",
+				"adminOnly.ignoreCommand": []
+			},
+			"database/controller/threadsData.js": "fixes bugs",
+			"index.js": "language update",
+			"scripts/cmds/adminonly.js": ""
+		}
+	},
+	{
+		"version": "1.1.19",
+		"files": {
+			"scripts/cmds/customrankcard.js": "language update",
+			"scripts/cmds/hubble.js": "language update",
+			"scripts/cmds/thread.js": "more precise search feature",
+			"scripts/cmds/user.js": "more precise search feature",
+			"scripts/cmds/help.js": "fixes not showing description when viewing command info",
+			"bot/login/login.js": "can enable/disable auto-relogin when account.txt file changes in config.json/autoReloginWhenChangeAccount",
+			"config.json": {
+				"autoReloginWhenChangeAccount": false
+			}
+		}
+	},
+	{
+		"version": "1.1.20",
+		"files": {
+			"scripts/cmds/filteruser.js": "fixes bugs bot listening members reaction message and kick members",
+			"config.json": {
+				"language": "en",
+				"notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)"
+			}
+		}
+	},
+	{
+		"version": "1.1.21",
+		"files": {
+			"configCommands.json": "youtube api key not used",
+			"database/controller/dashBoardData.js": "Bug fixes & code optimization",
+			"database/controller/globalData.js": "Bug fixes & code optimization",
+			"database/controller/threadsData.js": "Bug fixes & code optimization",
+			"database/controller/usersData.js": "Bug fixes & code optimization",
+			"scripts/cmds/busy.js": "Bug fixes & code optimization",
+			"scripts/cmds/help.js": "language update",
+			"scripts/cmds/setlang.js": "fixes not saving data when changing language of chat group"
+		}
+	},
+	{
+		"version": "1.1.22",
+		"files": {
+			"database/controller/dashBoardData.js": "bug fixes & code optimization",
+			"database/controller/globalData.js": "bug fixes & code optimization",
+			"database/controller/threadsData.js": "bug fixes & code optimization",
+			"database/controller/usersData.js": "bug fixes & code optimization",
+			"scripts/cmds/busy.js": "bug fixes & code optimization",
+			"scripts/cmds/rules.js": "respond with the order number to see that rule"
+		}
+	},
+	{
+		"version": "1.1.23",
+		"files": {
+			"scripts/cmds/adduser.js": "bugs fixes & language update",
+			"scripts/cmds/callad.js": "bugs fixes & language update",
+			"scripts/cmds/jsontomongodb.js": "bugs fixes & language update",
+			"scripts/cmds/jsontosqlite.js": "bugs fixes & language update",
+			"scripts/cmds/notification.js": "bugs fixes & language update",
+			"scripts/cmds/sendnoti.js": "bugs fixes & language update",
+			"utils.js": "bugs fixes `findUid` & language update"
+		}
+	},
+	{
+		"version": "1.1.24",
+		"files": {
+			"scripts/cmds/user.js": "code optimization",
+			"scripts/cmds/thread.js": "code optimization",
+			"scripts/cmds/moon.js": "the structure of the source web has changed, I fixed it",
+			"scripts/cmds/help.js": "continue with the next numbering for the next page",
+			"scripts/cmds/eval.js": "add function `output` & `out`: similar to message.reply() but will automatically convert input data types to strings",
+			"scripts/cmds/admin.js": "can reply to the message to select the target as the sender of that message",
+			"bot/handler/handlerEvents.js": "languages update",
+			"languages/en.lang": "language update",
+			"languages/vi.lang": "language update"
+		}
+	},
+	{
+		"version": "1.1.25",
+		"files": {
+			"bot/login/login.js": "code optimization",
+			"bot/login/getFbstate1.js": "code optimization",
+			"scripts/cmds/jsontosqlite.js": "fixed error: `TypeError: Cannot read property 'globalData' of undefined` when convert global data",
+			"scripts/cmds/jsontomongodb.js": "fixed error: `TypeError: Cannot read property 'globalData' of undefined` when convert global data"
+		}
+	},
+	{
+		"version": "1.1.26",
+		"files": {
+			"bot/handler/handlerEvents.js": "code optimization & bug fixes & add feature autoRefreshThreadInfoFirstTime: when you set autoRefreshThreadInfoFirstTime to true on config, the bot will automatically refresh the thread information when get first message from the thread since starting the bot",
+			"config.json": {
+				"database.autoRefreshThreadInfoFirstTime": false,
+				"database.notes": "(1) type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable. (2) when you set autoSyncWhenStart to true, the bot will automatically synchronize the data in the database when starting the bot, this will make the bot start slower. (3) when you set autoRefreshThreadInfoFirstTime to true, the bot will automatically refresh the thread information when get first message from the thread since starting the bot"
+			},
+			"bot/login/loadData.js": "code optimization & bug fixes",
+			"database/controller/threadsData.js": "code optimization & bug fixes refreshInfo function",
+			"index.js": "",
+			"scripts/cmds/notification.js": "language update"
+		}
+	},
+	{
+		"version": "1.1.27",
+		"files": {
+			"languages/cmds/en.js": "language update",
+			"scripts/cmds/help.js": "language update",
+			"scripts/cmds/notification.js": "more precise group filtering",
+			"scripts/cmds/setleave.js": "fixes the error when sending the link",
+			"scripts/cmds/setrankup.js": "fixes the error when sending the link",
+			"scripts/cmds/setwelcome.js": "fixes the error when sending the link",
+			"scripts/cmds/shortcut.js": "fixes the error when sending the link",
+			"scripts/cmds/thread.js": "can search and filter bot groups that are still participating in the group"
+		}
+	},
+	{
+		"version": "1.1.28",
+		"files": {
+			"database/controller/threadsData.js": "bug fixes refreshInfo function: missing `userID` parameter when refreshing members information leads to huge data generation"
+		}
+	},
+	{
+		"version": "1.1.29",
+		"files": {
+			"Goat.js": "",
+			"index.js": "",
+			"bot/handler/handlerEvents.js": "languages update",
+			"bot/login/login.js": "languages update",
+			"languages/en.lang": "languages update",
+			"languages/vi.lang": "languages update",
+			"scripts/cmds/restart.js": "a new command: restart bot",
+			"config.json": {
+				"autoRestart": {
+					"time": null,
+					"notes": "you can set time is interval with milisecond or cron time, example: 1000, 10000, 60000, 3600000, 86400000, 0 0 * * *,... docs: https://www.npmjs.com/package/node-cron. If you set time is 0 or false or null, the bot will not auto restart"
+				}
+			}
+		}
+	},
+	{
+		"version": "1.1.30",
+		"files": {
+			"Goat.js": "fixed `TypeError: Cannot read property 'match' of null`"
+		}
+	},
+	{
+		"version": "1.1.31",
+		"files": {
+			"scripts/cmds/avatar.js": "fixes error: `TypeError: Cannot read properties of undefined (reading 'data')`",
+			"scripts/cmds/cmd.js": "",
+			"scripts/cmds/restart.js": "",
+			"config.json": {}
+		}
+	},
+	{
+		"version": "1.1.32",
+		"files": {
+			"bot/login/login.js": "fixes facebook login problem",
+			"bot/login/getFbstate1.js": "fixes facebook login problem",
+			"config.json": {
+				"facebookAccount.userAgent": "Mozilla/5.0 (Linux; Android 12; M2102J20SG) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Mobile Safari/537.36"
+			},
+			"logger/log.js": "remove the separator character",
+			"logger/loading.js": "remove the separator character",
+			"dashboard/views/dashboard-thread.eta": "code optimization",
+			"dashboard/views/dashboard.eta": "code optimization",
+			"dashboard/views/partials/footer.eta": "code optimization",
+			"dashboard/views/partials/header.eta": "code optimization",
+			"dashboard/views/partials/message.eta": "code optimization",
+			"dashboard/views/register-submit-code.eta": "code optimization",
+			"dashboard/views/verifyfbid-submit-code.eta": "code optimization",
+			"dashboard/views/verifyfbid.eta": "code optimization"
+		}
+	},
+	{
+		"version": "1.1.33",
+		"files": {
+			"bot/handler/handlerEvents.js": "Fixed a error that failed to generate data when adding a bot to a new chat box",
+			"database/controller/threadsData.js": "Fixed a error that failed to generate data when adding a bot to a new chat box",
+			"database/controller/dashBoardData.js": "minor bug fixes",
+			"database/controller/globalData.js": "minor bug fixes",
+			"database/controller/usersData.js": "minor bug fixes",
+			"scripts/events/logsbot.js": "fixes bot changing nickname twice when added to new chat box"
+		}
+	},
+	{
+		"version": "1.1.34",
+		"files": {
+			"scripts/cmds/tik.js": "fixes error: `Error: connect ECONNREFUSED 0.0.0.0:443`",
+			"utils.js": "add `shortenURL` feature"
+		}
+	},
+	{
+		"version": "1.1.35",
+		"files": {
+			"bot/login/getFbstate1.js": "can detect using old password when logging in",
+			"bot/handler/handlerEvents.js": "language update",
+			"languages/cmds/en.js": "language update",
+			"languages/en.lang": "language update",
+			"scripts/cmds/cmd.js": "language update",
+			"scripts/cmds/tik.js": "fixes errors cannot download videos/audio",
+			"scripts/cmds/ytb.js": "Delete the ytdl-core package & fixes error `Cannot Search Video`",
+			"scripts/cmds/emojimean.js": "New command: Searching for the meaning of Emoji, the data is taken from `https://www.emojiall.com/`"
+		}
+	},
+	{
+		"version": "1.1.36",
+		"files": {
+			"scripts/cmds/emojimean.js": "automatically select the highest resolution image"
+		}
+	},
+	{
+		"version": "1.1.37",
+		"files": {
+			"languages/cmds/en.js": "language update",
+			"bot/handler/handlerEvents.js": "fixes error `TypeError: Cannot read property 'config' of undefined`",
+			"bot/login/login.js": "fixes auto restart bot when calling `cmd loadAll`",
+			"scripts/cmds/cmd.js": "can load multiple commands at once",
+			"scripts/cmds/customrankcard.js": "Can be customized more",
+			"scripts/cmds/rank.js": "can be customized more",
+			"scripts/cmds/help.js": "language update",
+			"scripts/cmds/tik.js": "fixes error when download slides",
+			"scripts/cmds/ytb.js": "fixes error `TypeError: Cannot read properties of null (reading '0')`",
+			"utils.js": "",
+			"scripts/cmds/assets/guide/customrankcard/guide1.jpg": ""
+		}
+	},
+	{
+		"version": "1.1.38",
+		"files": {
+			"languages/cmds/en.js": "language update and change the image storage address of some commands",
+			"scripts/cmds/setwelcome.js": "change photo storage address",
+			"scripts/cmds/setleave.js": "change photo storage address",
+			"scripts/cmds/setname.js": "change photo storage address"
+		},
+		"deleteFiles": {
+			"scripts/cmds/assets/guide/customrankcard/guide1.jpg": "change photo storage address",
+			"scripts/cmds/assets/guide/customrankcard/guide2.png": "change photo storage address",
+			"scripts/cmds/assets/guide/setleave/guide1.png": "change photo storage address",
+			"scripts/cmds/assets/guide/setname/guide1.png": "change photo storage address",
+			"scripts/cmds/assets/guide/setname/guide2.png": "change photo storage address",
+			"scripts/cmds/assets/guide/setwelcome/guide1.png": "change photo storage address"
+		}
+	},
+	{
+		"version": "1.1.39",
+		"files": {
+			"updater.js":"update updater",
+			"scripts/cmds/help.js": "fix can't automatically create new folder when it doesn't exist"
+		}
+	},
+	{
+		"version": "1.1.40",
+		"files": {
+			"scripts/cmds/customrankcard.js": "fixes can't select photo by replying to message",
+			"scripts/cmds/rank.js": "fixes not being able to optional alphaSubcolor = 0"
 		}
 	}
 ]

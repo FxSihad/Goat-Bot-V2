@@ -1,6 +1,7 @@
 const { existsSync, writeJsonSync, readJSONSync } = require("fs-extra");
 const moment = require("moment-timezone");
 const path = require("path");
+
 const _ = require("lodash");
 const optionsWriteJSON = {
 	spaces: 2,
@@ -14,10 +15,11 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 
 	switch (databaseType) {
 		case "mongodb":
-			Dashboard = await dashBoardModel.find().lean();
+			// delete keys '_id' and '__v' in all dashboard data
+			Dashboard = (await dashBoardModel.find({}).lean()).map(item => _.omit(item, ["_id", "__v"]));
 			break;
 		case "sqlite":
-			Dashboard = (await dashBoardModel.findAll()).map(u => u.get({ plain: true }));
+			Dashboard = (await dashBoardModel.findAll()).map(item => item.get({ plain: true }));
 			break;
 		case "json":
 			if (!existsSync(pathDashBoardData))
@@ -28,7 +30,7 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 	global.client.dashBoardData = Dashboard;
 
 	async function save(email, userData, mode, path) {
-		const index = _.findIndex(Dashboard, { email });
+		const index = _.findIndex(global.client.dashBoardData, { email });
 		if (index === -1 && mode === "update") {
 			const e = new Error(`Can't find user with email: ${email} in database`);
 			e.name = "USER_NOT_FOUND";
@@ -41,63 +43,78 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 					case "mongodb":
 					case "sqlite": {
 						const dataCreated = await dashBoardModel.create(userData);
-						Dashboard.push(dataCreated);
-						return databaseType == "mongodb" ? dataCreated : dataCreated.get({ plain: true });
+						global.client.dashBoardData.push(dataCreated);
+						return databaseType == "mongodb" ?
+							_.omit(dataCreated._doc, ["_id", "__v"]) :
+							dataCreated.get({ plain: true });
 					}
 					case "json": {
 						const timeCreate = moment.tz().format();
 						userData.createdAt = timeCreate;
 						userData.updatedAt = timeCreate;
-						Dashboard.push(userData);
-						writeJsonSync(pathDashBoardData, Dashboard, optionsWriteJSON);
+						global.client.dashBoardData.push(userData);
+						writeJsonSync(pathDashBoardData, global.client.dashBoardData, optionsWriteJSON);
 						return userData;
 					}
 				}
 				break;
 			}
 			case "update": {
-				let dataWillChange = Dashboard[index];
+				const oldUserData = global.client.dashBoardData[index];
+				const dataWillChange = {};
 
-				if (Array.isArray(path) && Array.isArray(userData))
-					dataWillChange = path.forEach((p, i) => _.set(dataWillChange, p, userData[i]));
+				if (Array.isArray(path) && Array.isArray(userData)) {
+					path.forEach((p, index) => {
+						const key = p.split(".")[0];
+						dataWillChange[key] = oldUserData[key];
+						_.set(dataWillChange, p, userData[index]);
+					});
+				}
 				else
-					if (path)
-						dataWillChange = _.set(dataWillChange, path, userData);
+					if (path && typeof path === "string" || Array.isArray(path)) {
+						const key = Array.isArray(path) ? path[0] : path.split(".")[0];
+						dataWillChange[key] = oldUserData[key];
+						_.set(dataWillChange, path, userData);
+					}
 					else
 						for (const key in userData)
 							dataWillChange[key] = userData[key];
 
 				switch (databaseType) {
 					case "mongodb": {
-						const dataUpdated = await dashBoardModel.findOneAndUpdate({ email }, dataWillChange, { returnDocument: 'after' });
-						Dashboard[index] = dataUpdated;
+						let dataUpdated = await dashBoardModel.findOneAndUpdate({ email }, dataWillChange, { returnDocument: 'after' });
+						dataUpdated = _.omit(dataUpdated._doc, ["_id", "__v"]);
+						global.client.dashBoardData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "sqlite": {
 						const dataUpdated = (await (await dashBoardModel.findOne({ where: { email } }))
 							.update(dataWillChange))
 							.get({ plain: true });
-						Dashboard[index] = dataUpdated;
+						global.client.dashBoardData[index] = dataUpdated;
 						return dataUpdated;
 					}
 					case "json": {
 						dataWillChange.updatedAt = moment.tz().format();
-						Dashboard[index] = dataWillChange;
-						writeJsonSync(pathDashBoardData, Dashboard, optionsWriteJSON);
-						return dataWillChange;
+						global.client.dashBoardData[index] = {
+							...oldUserData,
+							...dataWillChange
+						};
+						writeJsonSync(pathDashBoardData, global.client.dashBoardData, optionsWriteJSON);
+						return global.client.dashBoardData[index];
 					}
 				}
 				break;
 			}
 			case "remove": {
 				if (index != -1) {
-					Dashboard.splice(index, 1);
+					global.client.dashBoardData.splice(index, 1);
 					if (databaseType == "mongodb")
 						await dashBoardModel.deleteOne({ email });
 					else if (databaseType == "sqlite")
 						await dashBoardModel.destroy({ where: { email } });
 					else
-						writeJsonSync(pathDashBoardData, Dashboard, optionsWriteJSON);
+						writeJsonSync(pathDashBoardData, global.client.dashBoardData, optionsWriteJSON);
 				}
 				break;
 			}
@@ -115,7 +132,7 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 
 		const queue = new Promise(async function (resolve, reject) {
 			try {
-				if (Dashboard.some(u => u.email == email)) {
+				if (global.client.dashBoardData.some(u => u.email == email)) {
 					const messageError = new Error(`User with email "${email}" already exists in the data`);
 					messageError.name = "USER_ALREADY_EXISTS";
 					throw messageError;
@@ -139,7 +156,7 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 
 	function getAll(path, defaultValue, query) {
 		try {
-			let dataReturn = _.cloneDeep(Dashboard);
+			let dataReturn = _.cloneDeep(global.client.dashBoardData);
 
 			if (query)
 				if (typeof query !== "string")
@@ -168,7 +185,7 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 		try {
 			if (!email || typeof email != "string")
 				throw new Error(`The first argument (email) must be a string, not a ${typeof email}`);
-			let userData = Dashboard.find(u => u.email == email);
+			let userData = global.client.dashBoardData.find(u => u.email == email);
 			if (!userData)
 				return undefined;
 
@@ -196,7 +213,7 @@ module.exports = async function (databaseType, dashBoardModel, fakeGraphql) {
 		try {
 			if (!path && (typeof updateData != "object" || typeof updateData == "object" && Array.isArray(updateData)))
 				throw new Error(`The second argument (updateData) must be an object or an array, not a ${typeof updateData}`);
-			if (!Dashboard.some(u => u.email == email)) {
+			if (!global.client.dashBoardData.some(u => u.email == email)) {
 				const messageError = new Error(`User with email "${email}" does not exist in the data`);
 				messageError.name = "USER_NOT_FOUND";
 				throw messageError;
