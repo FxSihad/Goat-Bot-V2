@@ -18,7 +18,11 @@ module.exports = {
 			alreadyInGroup: "Already in group",
 			successAdd: "- Successfully added %1 members to the group",
 			failedAdd: "- Failed to add %1 members to the group",
-			approve: "- Added %1 members to the approval list"
+			approve: "- Added %1 members to the approval list",
+			invalidLink: "Please enter a valid facebook link",
+			cannotGetUid: "Cannot get uid of this user",
+			linkNotExist: "This profile url does not exist",
+			cannotAddUser: "Bot is blocked or this user blocked strangers from adding to the group"
 		}
 	},
 	admin: {
@@ -183,9 +187,9 @@ module.exports = {
 			sendByUser: "\n- Sent from user",
 			content: "\n\nContent:\n─────────────────\n%1\n─────────────────\nReply this message to send message to user",
 			success: "Sent your message to admin successfully!",
-			reply: "📍 Reply from admin %1:\n%2\n─────────────────\nReply this message to continue send message to admin",
+			reply: "📍 Reply from admin %1:\n─────────────────\n%2\n─────────────────\nReply this message to continue send message to admin",
 			replySuccess: "Sent your reply to admin successfully!",
-			feedback: "📝 Feedback from user %1:\n- User ID: %2\n- Content:\n%3\n─────────────────\nReply this message to send message to user",
+			feedback: "📝 Feedback from user %1:\n- User ID: %2%3\n\nContent:\n─────────────────\n%4\n─────────────────\nReply this message to send message to user",
 			replyUserSuccess: "Sent your reply to user successfully!"
 		}
 	},
@@ -364,16 +368,17 @@ module.exports = {
 		longDescription: "View command usage",
 		guide: "{pn} [empty | <page number> | <command name>]",
 		text: {
-			help: "%1\n%2\n%1\nPage [ %3/%4 ]\nCurrently, the bot has %5 commands that can be used\n» Type %6help to view the command list\n» Type %6help to view the details of how to use that command\n%1\n%7",
-			help2: "%1%2\n» Currently, the bot has %3 commands that can be used, type %4help <command name> to view the details of how to use that command\n%2\n%5",
+			help: "╭─────────────⭓\n%1\n├─────⭔\n│ Page [ %2/%3 ]\n│ Currently, the bot has %4 commands that can be used\n│ » Type %5help <page> to view the command list\n│ » Type %5help to view the details of how to use that command\n├────────⭔\n│ %6\n╰─────────────⭓",
+			help2: "%1├───────⭔\n│ » Currently, the bot has %2 commands that can be used\n│ » Type %3help <command name> to view the details of how to use that command\n│ %4\n╰─────────────⭓",
 			commandNotFound: "Command \"%1\" does not exist",
-			getInfoCommand: "%1\n» Description: %2\n» Other names: %3\n» Other names in your group: %4\n» Version: %5\n» Role: %6\n» Time per command: %7s\n» Author: %8\n━━━  ❖  ━━━\n» Usage guide:\n%9\n━━━  ❖  ━━━\n» Notes:\n• The content inside <XXXXX> can be changed\n• The content inside [a|b|c] is a or b or c",
+			getInfoCommand: "╭── NAME ────⭓\n│ %1\n├── INFO\n│ Description: %2\n│ Other names: %3\n│ Other names in your group: %4\n│ Version: %5\n│ Role: %6\n│ Time per command: %7s\n│ Author: %8\n├── Usage\n%9\n├── Notes\n│ The content inside <XXXXX> can be changed\n│ The content inside [a|b|c] is a or b or c\n╰──────⭔",
 			doNotHave: "Do not have",
 			roleText0: "0 (All users)",
 			roleText1: "1 (Group administrators)",
 			roleText2: "2 (Admin bot)",
 			roleText0setRole: "0 (set role, all users)",
-			roleText1setRole: "1 (set role, group administrators)"
+			roleText1setRole: "1 (set role, group administrators)",
+			pageNotFound: "Page %1 does not exist"
 		}
 	},
 	kick: {
@@ -697,7 +702,9 @@ module.exports = {
 		longDescription: "warn member in group, if they have 3 warns, they will be banned",
 		guide: "   {pn} @tag <reason>: warn member\n   {pn} list: view list of warned members\n   {pn} listban: view list of banned members\n   {pn} info [@tag | <uid> | leave blank]: view warn info of tagged member or uid or yourself\n   {pn} unban <uid>: unban member by uid\n   {pn} unwarn <uid> [<warn number> | leave blank]: unwarn member by uid and warn number\n   {pn} warn reset: reset all warn data\n⚠️ You need to set admin for bot to auto kick banned members",
 		text: {
+			list: "List of members who have been warned:\n%1\n\nTo view the details of the warnings, use the \"%2warn info [@tag | <uid> | leave blank]\" command: to view the warning information of the tagged person or uid or yourself",
 			listBan: "List of members who have been warned 3 times and banned from the box:\n%1",
+			listEmpty: "Your group has no members who have been warned",
 			listBanEmpty: "Your group has no members banned from the box",
 			invalidUid: "Please enter a valid uid of the person you want to view information",
 			noData: "No data",

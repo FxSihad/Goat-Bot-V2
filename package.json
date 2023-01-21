@@ -1,7 +1,7 @@
 {
 	"name": "goat-bot-v2",
-	"version": "1.1.40",
-	"description": "A simple Bot chat messenger made by NTKhang, use personal account",
+	"version": "1.2.11",
+	"description": "A simple Bot chat messenger using personal account. Made by NTKhang.",
 	"main": "index.js",
 	"engines": {
 		"node": "16.x",
@@ -25,6 +25,7 @@
 		"form-data": "^4.0.0",
 		"fs-extra": "^11.1.0",
 		"googleapis": "^100.0.0",
+		"gradient-string": "^2.0.2",
 		"graphql-query-to-json": "^2.0.1",
 		"https": "^1.0.0",
 		"moment-timezone": "^0.5.34",
@@ -44,7 +45,8 @@
 		"sqlite3": "^5.0.5",
 		"streaming-cache": "^0.5.5",
 		"tinyurl": "^1.1.7",
-		"totp-generator": "^0.0.13"
+		"totp-generator": "^0.0.13",
+		"ytdl-core": "^4.11.2"
 	},
 	"scripts": {
 		"start": "node index.js"

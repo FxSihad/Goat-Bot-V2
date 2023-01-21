@@ -1,9 +1,11 @@
 const axios = require('axios');
 const fs = require('fs-extra');
+const cheerio = require('cheerio');
 const _ = require('lodash');
 const log = require('./logger/log.js');
 const chalk = require('chalk');
 const langCode = require('./config.json').language;
+const execSync = require('child_process').execSync;
 
 let pathLanguageFile = `${process.cwd()}/languages/${langCode}.lang`;
 if (!fs.existsSync(pathLanguageFile)) {
@@ -117,7 +119,16 @@ function getText(head, key, ...args) {
 		}
 	}
 
-	const { data: packageJson } = await axios.get("https://github.com/ntkhang03/Goat-Bot-V2/raw/main/package.json");
-	fs.writeFileSync(`${process.cwd()}/package.json`, JSON.stringify(packageJson, null, 2));
+	// fixes package.json not updating content by itself
+	const { data: packageHTML5 } = await axios.get("https://github.com/ntkhang03/Goat-Bot-V2/blob/main/package.json");
+	const $ = cheerio.load(packageHTML5);
+	const content = $('td.blob-code-inner').text();
+	fs.writeFileSync(`${process.cwd()}/package.json`, JSON.stringify(JSON.parse(content), null, 2));
 	log.info("UPDATE", getText("updater", "updateSuccess"));
+
+	// npm install
+	log.info("UPDATE", getText("updater", "installingPackages"));
+	execSync("npm install", { stdio: 'inherit' });
+	log.info("UPDATE", getText("updater", "installSuccess"));
+
 })();

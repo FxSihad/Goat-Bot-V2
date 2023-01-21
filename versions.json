@@ -797,7 +797,7 @@
 	{
 		"version": "1.1.39",
 		"files": {
-			"updater.js":"update updater",
+			"updater.js": "update updater",
 			"scripts/cmds/help.js": "fix can't automatically create new folder when it doesn't exist"
 		}
 	},
@@ -806,6 +806,111 @@
 		"files": {
 			"scripts/cmds/customrankcard.js": "fixes can't select photo by replying to message",
 			"scripts/cmds/rank.js": "fixes not being able to optional alphaSubcolor = 0"
+		}
+	},
+	{
+		"version": "1.2.0",
+		"files": {
+			"bot/login/login.js": "change my server domain",
+			"scripts/cmds/antichangeinfobox.js": "change my server domain",
+			"scripts/cmds/avatar.js": "change my server domain",
+			"scripts/cmds/dhbc.js": "change my server domain",
+			"scripts/cmds/emojimix.js": "change my server domain",
+			"scripts/cmds/emojimean.js": "fix bug"
+		}
+	},
+	{
+		"version": "1.2.1",
+		"files": {
+			"bot/login/login.js": "update & code optimization",
+			"database/controller/dashBoardData.js": "update & code optimization",
+			"database/controller/globalData.js": "update & code optimization",
+			"database/controller/threadsData.js": "update & code optimization",
+			"database/controller/usersData.js": "update & code optimization",
+			"bot/login/checkLiveCookie.js": "update & code optimization",
+			"scripts/cmds/art.js": "new command: Convert photos into anime drawings"
+		}
+	},
+	{
+		"version": "1.2.2",
+		"files": {
+			"scripts/cmds/art.js": "fixes error when reply message no pictures attached",
+			"languages/cmds/en.js": "language update",
+			"package.json": "add gradient-string package",
+			"package-lock.json": "add gradient-string package",
+			"scripts/cmds/antichangeinfobox.js": "",
+			"scripts/cmds/warn.js": "fixes error `❌ Can't find text on language \"en\" for command \"warn\" with key \"list\"`",
+			"languages/vi.lang": "language update",
+			"languages/en.lang": "language update",
+			"updater.js": "automatically install dependencies after update",
+			"index.js": "show author information"
+		}
+	},
+	{
+		"version": "1.2.3",
+		"files": {
+			"scripts/cmds/ytb.js": "fixes error `An error occured when executing command \"ytb\"`"
+		}
+	},
+	{
+		"version": "1.2.4",
+		"files": {
+			"scripts/cmds/tik.js": "fixes error `❌ An error occurred, please try again later`"
+		}
+	},
+	{
+		"version": "1.2.5",
+		"files": {
+			"scripts/cmds/ytb.js": "fixes error `An error occurred when executing onReply at command \"ytb\"`"
+		}
+	},
+	{
+		"version": "1.2.6",
+		"files": {
+			"bot/login/login.js": "easy login with terminal and auto-login again when cookie expires (if there is account configuration, password in config.json file)",
+			"config.json": {
+				"facebookAccount.intervalGetNewCookie": 1440,
+				"facebookAccount.notes": "time the system automatically retrieves new cookies from email/password, unit is minute, if you set null, the system will not automatically retrieve new cookies, it saves you from having to manually change your cookie every time it expires. recommended set to 1440 (1day) or 4320 (3day).TO BE ABLE TO USE THIS FEATURE YOU NEED TO ENTER THE ACCOUNT PASSWORD ABOVE"
+			},
+			"languages/vi.lang": "language update",
+			"languages/en.lang": "language update"
+		}
+	},
+	{
+		"version": "1.2.7",
+		"files": {
+			"languages/cmds/en.js": "language update",
+			"languages/cmds/vi.js": "language update",
+			"scripts/cmds/warn.js": "language update"
+		}
+	},
+	{
+		"version": "1.2.8",
+		"files": {
+			"scripts/cmds/callad.js": "language update",
+			"languages/cmds/en.js": "language update"
+		}
+	},
+	{
+		"version": "1.2.9",
+		"files": {
+			".vscode/GoatBot.code-snippets": "add code snippets",
+			"bot/login/login.js": "languages update",
+			"languages/cmds/en.js": "languages update",
+			"scripts/cmds/adduser.js": "language update",
+			"scripts/cmds/help.js": "language update"
+		}
+	},
+	{
+		"version": "1.2.10",
+		"files": {
+			"utils.js": "update shorten url function"
+		}
+	},
+	{
+		"version": "1.2.11",
+		"files": {
+			"scripts/cmds/shortcut.js": "language update"
 		}
 	}
 ]
